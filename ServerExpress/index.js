@@ -24,11 +24,14 @@ const upload = multer({storage:storage})
 app.use(express.urlencoded({extended:true}));
 app.use(upload.single('archivo'));
 
-const PORT = process.env.PORT || 8084;
-const HOST = process.env.HOST;
-const USER = process.env.USER;
-const PASSWORD = process.env.PASSWORD;
-const DATABASE = process.env.DATABASE;
+const PORT = process.env.MYSQLPORT || 8080;
+const HOST = process.env.MYSQLHOST;
+const USER = process.env.MYSQLUSER;
+const PASSWORD = process.env.MYSQLPASSWORD;
+const DATABASE = process.env.MYSQL_DATABASE;
+
+const MySqlConnection = {host : MYSQLHOST, user : MYSQLUSER, password : MYSQLPASSWORD, database: MYSQL_DATABASE,port : MYSQLPORT, }
+
 const data = fs.readFileSync(path.join(__dirname,'./Options.json'),{ encoding: 'utf8', flag: 'r' });
 const obj = JSON.parse(data)
 
@@ -211,7 +214,7 @@ app.get("/usuarios", async (req, res) => {
     try {
         const token = req.token;
 
-            const conn = await mysql.createConnection({ host: 'localhost', user: 'root', password: '', database: 'login' });
+            const conn = await mysql.createConnection(MySqlConnection);
             const [rows, fields] = await conn.query('SELECT * from usuario');
             res.json(rows);
         
@@ -238,7 +241,7 @@ app.get('/ruta-protegida', auth, (req, res) => {
 
 app.get("/usuarios/:id",async(req,res)=>{    
 console.log(req.params.id)
-const conn=await mysql.createConnection({host:'localhost',user:'root',password:'',database:'login'})
+const conn=await mysql.createConnection(MySqlConnection)
    const[rows,fields]=await conn.query('SELECT * from usuario where Tipo='+req.params.id);
 if(rows.length==0)
 {
@@ -250,7 +253,7 @@ if(rows.length==0)
 
 app.post('/insertar', async (req, res) => {
     try {
-        const conn = await mysql.createConnection({ host: 'localhost', user: 'root', password: '', database: 'login' });
+        const conn = await mysql.createConnection(MySqlConnection);
 
         const { Tipo, Nombre, Contraseña } = req.body;
 
@@ -265,7 +268,7 @@ app.post('/insertar', async (req, res) => {
 
 app.put("/usuario/:Tipo", async (req, res) => {
     try {
-        const conn = await mysql.createConnection({ host: 'localhost', user: 'root', password: '', database: 'login' });
+        const conn = await mysql.createConnection(MySqlConnection);
         const { Usuario, Contraseña } = req.body;
         console.log(Usuario + Contraseña);
         console.log(req.body);
@@ -278,7 +281,7 @@ app.put("/usuario/:Tipo", async (req, res) => {
 
 app.delete("/usuarios/:Tipo", async (req, res) => {    
     try {
-        const conn = await mysql.createConnection({ host: 'localhost', user: 'root', password: '', database: 'login' });
+        const conn = await mysql.createConnection(MySqlConnection);
         const [rows, fields] = await conn.query('DELETE FROM usuario WHERE Tipo = ?', [req.params.Tipo]);
 
         if (rows.affectedRows == 0) {
