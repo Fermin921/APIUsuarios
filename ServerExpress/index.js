@@ -24,7 +24,11 @@ const upload = multer({storage:storage})
 app.use(express.urlencoded({extended:true}));
 app.use(upload.single('archivo'));
 
-
+const PORT = process.env.PORT || 8084;
+const HOST = process.env.HOST;
+const USER = process.env.USER;
+const PASSWORD = process.env.PASSWORD;
+const DATABASE = process.env.DATABASE;
 const data = fs.readFileSync(path.join(__dirname,'./Options.json'),{ encoding: 'utf8', flag: 'r' });
 const obj = JSON.parse(data)
 
